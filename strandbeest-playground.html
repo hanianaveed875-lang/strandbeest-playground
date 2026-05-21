@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦗 Strandbeest Playground & Builder's Toolkit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FDB813;
+            --primary-light: #FFD700;
+            --secondary: #00FF41;
+            --secondary-light: #39FF14;
+            --background: #0f172a;
+            --surface: #1a2847;
+            --surface-light: #2a3f5f;
+            --text: #e8e8e8;
+            --text-muted: #9ca3af;
+            --error: #ff4444;
+            --success: #00FF41;
+            --border: rgba(253, 184, 19, 0.3);
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h1 {
+            font-size: 3em;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(253, 184, 19, 0.5);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: var(--secondary);
+            font-size: 1.1em;
+            text-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(253, 184, 19, 0.1);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3em;
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(253, 184, 19, 0.4);
+        }
+
+        .card-title-icon {
+            font-size: 1.5em;
+        }
+
+        canvas {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #0a0f1a 0%, #1a2847 100%);
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(253, 184, 19, 0.2), inset 0 0 30px rgba(0, 255, 65, 0.05);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--surface-light);
+            transition: 0.3s;
+            border-radius: 24px;
+            border: 1px solid var(--primary);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 2px;
+            background-color: var(--primary);
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(253, 184, 19, 0.5);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--secondary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+            background-color: var(--secondary);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        }
+
+        button {
+            background: var(--surface-light);
+            color: var(--text);
+            border: 2px solid var(--primary);
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            box-shadow: 0 0 10px rgba(253, 184, 19, 0.2);
+        }
+
+        button:hover {
+            background: var(--primary);
+            color: var(--background);
+            box-shadow: 0 0 20px rgba(253, 184, 19, 0.5);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button.secondary {
+            border-color: var(--secondary);
+            color: var(--secondary);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+        }
+
+        button.secondary:hover {
+            background: var(--secondary);
+            color: var(--background);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        }
+
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .slider-label-name {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .slider-label-value {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .slider-label-desc {
+            color: var(--text-muted);
+            font-size: 0.85em;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            box-shadow: 0 0 15px rgba(253, 184, 19, 0.3);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(253, 184, 19, 0.6);
+            border: 2px solid var(--text);
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 25px rgba(253, 184, 19, 0.8);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(253, 184, 19, 0.6);
+            border: 2px solid var(--text);
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 25px rgba(253, 184, 19, 0.8);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .status-badge.valid {
+            background: rgba(0, 255, 65, 0.2);
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+        }
+
+        .status-badge.invalid {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--error);
+            border: 1px solid var(--error);
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+        }
+
+        .bom-section {
+            margin-top: 20px;
+        }
+
+        .bom-subsection {
+            background: var(--surface-light);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .bom-subsection-title {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 8px rgba(253, 184, 19, 0.3);
+        }
+
+        .bom-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(253, 184, 19, 0.1);
+            font-size: 0.95em;
+        }
+
+        .bom-item:last-child {
+            border-bottom: none;
+        }
+
+        .bom-label {
+            color: var(--text-muted);
+        }
+
+        .bom-value {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .stress-modes {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stress-mode-btn {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .leg-config {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .leg-btn {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .tip-box {
+            background: rgba(0, 255, 65, 0.1);
+            border-left: 3px solid var(--secondary);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        .tip-box strong {
+            color: var(--secondary);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .footer a:hover {
+            text-shadow: 0 0 10px rgba(253, 184, 19, 0.5);
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            canvas {
+                height: 300px;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--surface);
+            color: var(--secondary);
+            padding: 15px 25px;
+            border-radius: 4px;
+            border: 2px solid var(--secondary);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.out {
+            animation: slideOut 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🦗 STRANDBEEST PLAYGROUND</h1>
+            <p class="subtitle">Interactive Jansen's Linkage Simulator & Builder's Toolkit</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Left: Interactive Canvas -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="card-title-icon">⚙️</span>
+                    INTERACTIVE PLAYGROUND
+                </div>
+                <div class="status-badge" id="statusBadge">
+                    <span>✅</span>
+                    <span id="statusText">VALID MECHANISM</span>
+                </div>
+                <canvas id="canvas"></canvas>
+                <div class="controls">
+                    <div class="control-group">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="animationToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span>ANIMATION</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Controls & BOM -->
+            <div>
+                <!-- Stress Test Modes -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-title">
+                        <span class="card-title-icon">🌍</span>
+                        STRESS TEST MODES
+                    </div>
+                    <div class="stress-modes">
+                        <button class="stress-mode-btn" onclick="setStressMode('normal')">🏜️ Normal</button>
+                        <button class="stress-mode-btn" onclick="setStressMode('sandstorm')">🌪️ Sandstorm</button>
+                        <button class="stress-mode-btn" onclick="setStressMode('rocky')">🪨 Rocky</button>
+                    </div>
+                </div>
+
+                <!-- Linkage Parameters -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-title">
+                        <span class="card-title-icon">⚙️</span>
+                        LINKAGE PARAMETERS
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span class="slider-label-name">Crank</span>
+                            <span class="slider-label-value" id="crankValue">1.0</span>
+                        </div>
+                        <input type="range" id="crankSlider" min="0.5" max="2" step="0.1" value="1.0">
+                        <div class="slider-label-desc">Driving crank (rotates continuously)</div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span class="slider-label-name">Coupler</span>
+                            <span class="slider-label-value" id="couplerValue">50.0</span>
+                        </div>
+                        <input type="range" id="couplerSlider" min="20" max="80" step="0.5" value="50.0">
+                        <div class="slider-label-desc">Coupler link</div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span class="slider-label-name">Rocker</span>
+                            <span class="slider-label-value" id="rockerValue">61.9</span>
+                        </div>
+                        <input type="range" id="rockerSlider" min="30" max="90" step="0.5" value="61.9">
+                        <div class="slider-label-desc">Rocker link</div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span class="slider-label-name">Leg</span>
+                            <span class="slider-label-value" id="legValue">39.3</span>
+                        </div>
+                        <input type="range" id="legSlider" min="20" max="60" step="0.5" value="39.3">
+                        <div class="slider-label-desc">Leg extension</div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span class="slider-label-name">Foot</span>
+                            <span class="slider-label-value" id="footValue">36.7</span>
+                        </div>
+                        <input type="range" id="footSlider" min="20" max="60" step="0.5" value="36.7">
+                        <div class="slider-label-desc">Foot segment</div>
+                    </div>
+
+                    <button onclick="resetToJansen()" style="width: 100%; margin-top: 15px;">🔄 Reset to Jansen Proportions</button>
+
+                    <div class="tip-box">
+                        <strong>💡 TIP:</strong> Adjust sliders to modify the linkage proportions. The mechanism validates in real-time. If it jams, the animation stops and the beams turn red.
+                    </div>
+                </div>
+
+                <!-- Bill of Materials -->
+                <div class="card">
+                    <div class="card-title">
+                        <span class="card-title-icon">📋</span>
+                        BILL OF MATERIALS
+                    </div>
+
+                    <div class="bom-section">
+                        <div class="bom-subsection">
+                            <div class="bom-subsection-title">⚙️ BEAST CONFIGURATION</div>
+                            <div class="bom-item">
+                                <span class="bom-label">TARGET BEAST HEIGHT:</span>
+                                <span class="bom-value">24" (2.0')</span>
+                            </div>
+                            <div class="bom-item">
+                                <span class="bom-label">Scale Factor:</span>
+                                <span class="bom-value" id="scaleFactor">0.32x</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <div style="color: var(--primary); font-weight: bold; margin-bottom: 10px;">LEG COUNT CONFIGURATOR</div>
+                            <div class="leg-config">
+                                <button class="leg-btn" onclick="setLegCount(4)">4-Leg</button>
+                                <button class="leg-btn" onclick="setLegCount(6)">6-Leg</button>
+                                <button class="leg-btn" onclick="setLegCount(8)">8-Leg</button>
+                                <button class="leg-btn" onclick="setLegCount(12)">12-Leg</button>
+                            </div>
+                        </div>
+
+                        <div class="bom-subsection">
+                            <div class="bom-subsection-title">📦 RIGID MATERIAL (PVC / WOOD DOWELS)</div>
+                            <div class="bom-item">
+                                <span class="bom-label">Total Length:</span>
+                                <span class="bom-value" id="totalLength">262.5"</span>
+                            </div>
+                            <div class="bom-item">
+                                <span class="bom-label">In Feet:</span>
+                                <span class="bom-value" id="totalFeet">21.9'</span>
+                            </div>
+                            <div style="color: var(--text-muted); font-size: 0.85em; margin-top: 8px;">✓ Includes 10% Maker's Margin for cutting mistakes</div>
+                        </div>
+
+                        <div class="bom-subsection">
+                            <div class="bom-subsection-title">🔩 HARDWARE (BOLTS, NUTS, WASHERS)</div>
+                            <div class="bom-item">
+                                <span class="bom-label">Bolts (1/4"):</span>
+                                <span class="bom-value" id="bolts">40 pcs</span>
+                            </div>
+                            <div class="bom-item">
+                                <span class="bom-label">Locknuts:</span>
+                                <span class="bom-value" id="locknuts">40 pcs</span>
+                            </div>
+                            <div class="bom-item">
+                                <span class="bom-label">Washers:</span>
+                                <span class="bom-value" id="washers">80 pcs</span>
+                            </div>
+                        </div>
+
+                        <div class="bom-subsection">
+                            <div class="bom-subsection-title">🏗️ STRUCTURAL ELEMENTS</div>
+                            <div class="bom-item">
+                                <span class="bom-label">Triangular Braces:</span>
+                                <span class="bom-value" id="braces">8 pcs</span>
+                            </div>
+                            <div class="bom-item">
+                                <span class="bom-label">Crankshaft Axles:</span>
+                                <span class="bom-value" id="axles">1 pcs</span>
+                            </div>
+                            <div class="bom-item">
+                                <span class="bom-label">Spacers:</span>
+                                <span class="bom-value" id="spacers">12 pcs</span>
+                            </div>
+                        </div>
+
+                        <div class="bom-subsection">
+                            <div class="bom-subsection-title">⏱️ ASSEMBLY METRICS</div>
+                            <div class="bom-item">
+                                <span class="bom-label">Difficulty Rating:</span>
+                                <span class="bom-value" id="difficulty">Easy Desk Toy</span>
+                            </div>
+                            <div class="bom-item">
+                                <span class="bom-label">Est. Assembly Time:</span>
+                                <span class="bom-value" id="assemblyTime">6.6 hours</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controls" style="margin-top: 20px;">
+                        <button onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+                        <button onclick="downloadBOM()" class="secondary">⬇️ Download TXT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Built for <strong>Hack Club</strong> • Inspired by <strong>Theo Jansen's Strandbeest</strong></p>
+            <p style="margin-top: 10px;">🚀 Ready to build your own walking sculpture? Start adjusting the sliders and let physics guide you.</p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // JANSEN'S LINKAGE PHYSICS ENGINE
+        // ============================================
+
+        const JANSEN_PROPORTIONS = {
+            crank: 1.0,
+            coupler: 50.0,
+            rocker: 61.9,
+            leg: 39.3,
+            foot: 36.7
+        };
+
+        let state = {
+            lengths: { ...JANSEN_PROPORTIONS },
+            isAnimating: true,
+            isJammed: false,
+            stressMode: 'normal',
+            legCount: 4,
+            targetHeight: 24,
+            angle: 0
+        };
+
+        // Kinematic solver for Jansen's linkage
+        function solveJansenLinkage(crank, coupler, rocker, leg, foot, angle) {
+            const crankX = crank * Math.cos(angle);
+            const crankY = crank * Math.sin(angle);
+
+            // Coupler point (solve using law of cosines)
+            const dist = Math.sqrt(crankX * crankX + crankY * crankY);
+            
+            // Check if mechanism can reach this configuration
+            const maxReach = coupler + rocker;
+            const minReach = Math.abs(coupler - rocker);
+            
+            if (dist > maxReach || dist < minReach) {
+                return null; // Mechanism jammed
+            }
+
+            // Law of cosines to find coupler angle
+            const cosAngle = (coupler * coupler + dist * dist - rocker * rocker) / (2 * coupler * dist);
+            
+            if (Math.abs(cosAngle) > 1) {
+                return null; // Invalid configuration
+            }
+
+            const couplerAngle = Math.atan2(crankY, crankX) + Math.acos(cosAngle);
+            const couplerX = coupler * Math.cos(couplerAngle);
+            const couplerY = coupler * Math.sin(couplerAngle);
+
+            // Rocker pivot is at origin
+            const rockerX = couplerX;
+            const rockerY = couplerY;
+
+            // Leg endpoint
+            const legAngle = Math.atan2(rockerY, rockerX) - Math.PI / 6; // Offset for leg
+            const legX = rockerX + leg * Math.cos(legAngle);
+            const legY = rockerY + leg * Math.sin(legAngle);
+
+            // Foot endpoint
+            const footAngle = legAngle + Math.PI / 4;
+            const footX = legX + foot * Math.cos(footAngle);
+            const footY = legY + foot * Math.sin(footAngle);
+
+            return {
+                crank: { x: crankX, y: crankY },
+                coupler: { x: couplerX, y: couplerY },
+                rocker: { x: rockerX, y: rockerY },
+                leg: { x: legX, y: legY },
+                foot: { x: footX, y: footY }
+            };
+        }
+
+        function validateLinkage(crank, coupler, rocker, leg, foot) {
+            // Test multiple angles
+            for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 12) {
+                const result = solveJansenLinkage(crank, coupler, rocker, leg, foot, angle);
+                if (!result) return false;
+            }
+            return true;
+        }
+
+        // ============================================
+        // CANVAS RENDERING
+        // ============================================
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let animationId = null;
+
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+
+        function drawLinkage(positions) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const scale = 3;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = 'rgba(0, 255, 65, 0.05)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 50) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i < canvas.height; i += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+
+            // Draw linkage
+            const p = {
+                origin: { x: centerX, y: centerY },
+                crank: { x: centerX + positions.crank.x * scale, y: centerY + positions.crank.y * scale },
+                coupler: { x: centerX + positions.coupler.x * scale, y: centerY + positions.coupler.y * scale },
+                rocker: { x: centerX + positions.rocker.x * scale, y: centerY + positions.rocker.y * scale },
+                leg: { x: centerX + positions.leg.x * scale, y: centerY + positions.leg.y * scale },
+                foot: { x: centerX + positions.foot.x * scale, y: centerY + positions.foot.y * scale }
+            };
+
+            // Draw beams with glow
+            const beams = [
+                { from: p.origin, to: p.crank, color: '#FDB813' },
+                { from: p.crank, to: p.coupler, color: '#00FF41' },
+                { from: p.origin, to: p.rocker, color: '#FDB813' },
+                { from: p.coupler, to: p.rocker, color: '#00FF41' },
+                { from: p.rocker, to: p.leg, color: '#00FF41' },
+                { from: p.leg, to: p.foot, color: '#FDB813' }
+            ];
+
+            beams.forEach(beam => {
+                // Glow effect
+                ctx.strokeStyle = beam.color + '40';
+                ctx.lineWidth = 8;
+                ctx.beginPath();
+                ctx.moveTo(beam.from.x, beam.from.y);
+                ctx.lineTo(beam.to.x, beam.to.y);
+                ctx.stroke();
+
+                // Main beam
+                ctx.strokeStyle = state.isJammed ? '#ff4444' : beam.color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(beam.from.x, beam.from.y);
+                ctx.lineTo(beam.to.x, beam.to.y);
+                ctx.stroke();
+            });
+
+            // Draw joints (rivets)
+            const joints = [p.origin, p.crank, p.coupler, p.rocker, p.leg, p.foot];
+            joints.forEach(joint => {
+                // Glow
+                ctx.fillStyle = '#00FF4140';
+                ctx.beginPath();
+                ctx.arc(joint.x, joint.y, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Rivet
+                ctx.fillStyle = state.isJammed ? '#ff4444' : '#00FF41';
+                ctx.beginPath();
+                ctx.arc(joint.x, joint.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Highlight
+                ctx.fillStyle = '#ffffff80';
+                ctx.beginPath();
+                ctx.arc(joint.x - 2, joint.y - 2, 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Draw status
+            ctx.fillStyle = '#FDB813';
+            ctx.font = 'bold 14px Courier New';
+            ctx.fillText('🔧 STATUS: ' + (state.isJammed ? 'JAMMED!' : 'Ready to March!'), 20, 30);
+        }
+
+        function animate() {
+            if (!state.isAnimating || state.isJammed) {
+                animationId = requestAnimationFrame(animate);
+                return;
+            }
+
+            state.angle += 0.05;
+            const positions = solveJansenLinkage(
+                state.lengths.crank,
+                state.lengths.coupler,
+                state.lengths.rocker,
+                state.lengths.leg,
+                state.lengths.foot,
+                state.angle
+            );
+
+            if (positions) {
+                state.isJammed = false;
+                drawLinkage(positions);
+            } else {
+                state.isJammed = true;
+                updateStatusBadge();
+            }
+
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // ============================================
+        // UI HANDLERS
+        // ============================================
+
+        function updateStatusBadge() {
+            const badge = document.getElementById('statusBadge');
+            const text = document.getElementById('statusText');
+            
+            if (state.isJammed) {
+                badge.className = 'status-badge invalid';
+                text.textContent = 'MECHANISM JAMMED';
+            } else {
+                badge.className = 'status-badge valid';
+                text.textContent = 'VALID MECHANISM';
+            }
+        }
+
+        function updateBOM() {
+            const scale = state.targetHeight / 60; // Reference height 60"
+            const totalLength = (
+                state.lengths.crank +
+                state.lengths.coupler +
+                state.lengths.rocker +
+                state.lengths.leg +
+                state.lengths.foot
+            ) * state.legCount * scale * 1.1; // 10% margin
+
+            document.getElementById('scaleFactor').textContent = (scale).toFixed(2) + 'x';
+            document.getElementById('totalLength').textContent = totalLength.toFixed(1) + '"';
+            document.getElementById('totalFeet').textContent = (totalLength / 12).toFixed(1) + "'";
+            
+            const bolts = Math.ceil(state.legCount * 10);
+            document.getElementById('bolts').textContent = bolts + ' pcs';
+            document.getElementById('locknuts').textContent = bolts + ' pcs';
+            document.getElementById('washers').textContent = (bolts * 2) + ' pcs';
+            
+            document.getElementById('braces').textContent = state.legCount + ' pcs';
+            document.getElementById('axles').textContent = '1 pcs';
+            document.getElementById('spacers').textContent = (state.legCount * 1.5).toFixed(0) + ' pcs';
+            
+            const difficulty = state.legCount <= 4 ? 'Easy Desk Toy' : state.legCount <= 6 ? 'Moderate' : 'Advanced';
+            document.getElementById('difficulty').textContent = difficulty;
+            
+            const hours = (state.legCount * 1.5).toFixed(1);
+            document.getElementById('assemblyTime').textContent = hours + ' hours';
+        }
+
+        function resetToJansen() {
+            state.lengths = { ...JANSEN_PROPORTIONS };
+            document.getElementById('crankSlider').value = JANSEN_PROPORTIONS.crank;
+            document.getElementById('couplerSlider').value = JANSEN_PROPORTIONS.coupler;
+            document.getElementById('rockerSlider').value = JANSEN_PROPORTIONS.rocker;
+            document.getElementById('legSlider').value = JANSEN_PROPORTIONS.leg;
+            document.getElementById('footSlider').value = JANSEN_PROPORTIONS.foot;
+            updateSliderValues();
+            updateBOM();
+            showToast('🔄 Reset to Jansen\'s proportions!');
+        }
+
+        function setStressMode(mode) {
+            state.stressMode = mode;
+            showToast(`🌍 Stress mode: ${mode.toUpperCase()}`);
+        }
+
+        function setLegCount(count) {
+            state.legCount = count;
+            updateBOM();
+            showToast(`🦗 Configured for ${count}-leg Strandbeest`);
+        }
+
+        function updateSliderValues() {
+            document.getElementById('crankValue').textContent = state.lengths.crank.toFixed(1);
+            document.getElementById('couplerValue').textContent = state.lengths.coupler.toFixed(1);
+            document.getElementById('rockerValue').textContent = state.lengths.rocker.toFixed(1);
+            document.getElementById('legValue').textContent = state.lengths.leg.toFixed(1);
+            document.getElementById('footValue').textContent = state.lengths.foot.toFixed(1);
+
+            state.isJammed = !validateLinkage(
+                state.lengths.crank,
+                state.lengths.coupler,
+                state.lengths.rocker,
+                state.lengths.leg,
+                state.lengths.foot
+            );
+            updateStatusBadge();
+        }
+
+        function copyToClipboard() {
+            const bom = generateBOMText();
+            navigator.clipboard.writeText(bom).then(() => {
+                showToast('📋 BOM copied to clipboard!');
+            });
+        }
+
+        function downloadBOM() {
+            const bom = generateBOMText();
+            const blob = new Blob([bom], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'strandbeest-bom.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('⬇️ BOM downloaded!');
+        }
+
+        function generateBOMText() {
+            const scale = state.targetHeight / 60;
+            const totalLength = (
+                state.lengths.crank +
+                state.lengths.coupler +
+                state.lengths.rocker +
+                state.lengths.leg +
+                state.lengths.foot
+            ) * state.legCount * scale * 1.1;
+
+            return `STRANDBEEST PLAYGROUND - BILL OF MATERIALS
+=====================================
+
+CONFIGURATION
+- Beast Height: ${state.targetHeight}"
+- Leg Count: ${state.legCount}
+- Scale Factor: ${scale.toFixed(2)}x
+
+LINKAGE PARAMETERS
+- Crank: ${state.lengths.crank.toFixed(1)}
+- Coupler: ${state.lengths.coupler.toFixed(1)}
+- Rocker: ${state.lengths.rocker.toFixed(1)}
+- Leg: ${state.lengths.leg.toFixed(1)}
+- Foot: ${state.lengths.foot.toFixed(1)}
+
+MATERIALS
+- Total PVC/Dowel Length: ${totalLength.toFixed(1)}" (${(totalLength/12).toFixed(1)}')
+- Includes 10% Maker's Margin
+
+HARDWARE
+- Bolts (1/4"): ${Math.ceil(state.legCount * 10)} pcs
+- Locknuts: ${Math.ceil(state.legCount * 10)} pcs
+- Washers: ${Math.ceil(state.legCount * 20)} pcs
+
+STRUCTURAL ELEMENTS
+- Triangular Braces: ${state.legCount} pcs
+- Crankshaft Axles: 1 pcs
+- Spacers: ${Math.ceil(state.legCount * 1.5)} pcs
+
+ASSEMBLY ESTIMATE
+- Difficulty: ${state.legCount <= 4 ? 'Easy' : state.legCount <= 6 ? 'Moderate' : 'Advanced'}
+- Assembly Time: ${(state.legCount * 1.5).toFixed(1)} hours
+
+Generated by Strandbeest Playground
+https://strandbeest.hack.club`;
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('out');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+
+        document.getElementById('animationToggle').addEventListener('change', (e) => {
+            state.isAnimating = e.target.checked;
+        });
+
+        document.getElementById('crankSlider').addEventListener('input', (e) => {
+            state.lengths.crank = parseFloat(e.target.value);
+            updateSliderValues();
+            updateBOM();
+        });
+
+        document.getElementById('couplerSlider').addEventListener('input', (e) => {
+            state.lengths.coupler = parseFloat(e.target.value);
+            updateSliderValues();
+            updateBOM();
+        });
+
+        document.getElementById('rockerSlider').addEventListener('input', (e) => {
+            state.lengths.rocker = parseFloat(e.target.value);
+            updateSliderValues();
+            updateBOM();
+        });
+
+        document.getElementById('legSlider').addEventListener('input', (e) => {
+            state.lengths.leg = parseFloat(e.target.value);
+            updateSliderValues();
+            updateBOM();
+        });
+
+        document.getElementById('footSlider').addEventListener('input', (e) => {
+            state.lengths.foot = parseFloat(e.target.value);
+            updateSliderValues();
+            updateBOM();
+        });
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        updateBOM();
+        animate();
+    </script>
+</body>
+</html>
